@@ -1,4 +1,11 @@
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.Scanner;
+
 
 public class Configuration {
     private int totalTickets;
@@ -9,21 +16,14 @@ public class Configuration {
     public int getTotalTickets() {
         return totalTickets;
     }
-    public void setTotalTickets(int totalTickets) {
-        this.totalTickets = totalTickets;
-    }
+
     public int getTicketReleaseRate() {
         return ticketReleaseRate;
-    }
-    public void setTicketReleaseRate(int ticketReleaseRate) {
-        this.ticketReleaseRate = ticketReleaseRate;
     }
     public int getCustomerRetrievalRate() {
         return customerRetrievalRate;
     }
-    public void setCustomerRetrievalRate(int customerRetrievalRate) {
-        this.customerRetrievalRate = customerRetrievalRate;
-    }
+
     public int getMaxTicketCapacity() {
         return maxTicketCapacity;
     }
@@ -34,7 +34,7 @@ public class Configuration {
     public void loadConfiguration(){
         Scanner input = new Scanner(System.in);
         System.out.println("*** Real-Time Event Ticketing System Configuration ***");
-
+        saveConfigurationToFile("configuration.json");
         // Total Number of Tickets
         while (true){
             System.out.println("Enter Total Number of Tickets");
@@ -104,6 +104,27 @@ public class Configuration {
             }
         }
     }
+
+    public void saveConfigurationToFile(String filePath) {
+        Gson gson = new GsonBuilder().setPrettyPrinting().create();
+        try (FileWriter writer = new FileWriter(filePath)) {
+            gson.toJson(this, writer);
+            System.out.println("Configuration saved to " + filePath);
+        } catch (IOException e) {
+            System.out.println("Failed to save configuration: " + e.getMessage());
+        }
+    }
+
+    public static Configuration loadConfigurationFromFile(String filePath) {
+        Gson gson = new Gson();
+        try (FileReader reader = new FileReader(filePath)) {
+            return gson.fromJson(reader, Configuration.class);
+        } catch (IOException e) {
+            System.out.println("Failed to load configuration: " + e.getMessage());
+            return null;
+        }
+    }
+
     @Override
     public String toString() {
         return "Configuration{" +
